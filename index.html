@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>ImageTool · M1</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="app">
+
+  <!-- ===== 顶部工具栏 ===== -->
+  <header class="toolbar" id="toolbar">
+
+    <!-- 工具栏 1：文件（已实现） -->
+    <section class="toolgroup" data-group="file">
+      <button class="tbtn" id="btn-open"  title="打开图片 (Ctrl+O)">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6a2 2 0 0 1 2-2h5l2 2h5a2 2 0 0 1 2 2v1H3V6Zm0 4h18v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7Z"/></svg>
+        <span>打开</span>
+      </button>
+      <button class="tbtn" id="btn-save"  title="保存 (Ctrl+S)" disabled>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h11l3 3v13a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Zm1 2v5h10V5H6Zm7 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z"/></svg>
+        <span>保存</span>
+      </button>
+      <button class="tbtn" id="btn-saveas" title="另存为 (Ctrl+Shift+S)" disabled>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9h-6V3Zm2 1.5 3.5 3.5H15V4.5ZM8 12h8v2H8v-2Zm0 4h5v2H8v-2Z"/></svg>
+        <span>另存</span>
+      </button>
+    </section>
+
+    <!-- 工具栏 2：裁剪 / 旋转（M2 已实现） -->
+    <section class="toolgroup" data-group="crop">
+      <button class="tbtn" id="btn-crop" title="裁剪 (C) · 框选后进入预备裁剪">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2v16H4v2h2v2h2v-2h10v-2h-2V6h2V4h-2V2h-2v2H8V2H6Zm2 2h8v10.5l-8-8V4Zm2 3.6 6 6V18H8V7.6Z"/></svg>
+        <span>裁剪</span>
+      </button>
+      <button class="tbtn" id="btn-rotate" title="旋转 / 镜像面板" aria-expanded="false">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 11h20v2H2v-2Zm10-9 5 5h-3v5h-4V7H7l5-5ZM12 22l-5-5h3v-5h4v5h3l-5 5Z"/></svg>
+        <span>旋转</span>
+      </button>
+    </section>
+
+    <!-- 工具栏 3：缩放（占位，未实现；缩放能力由状态栏 B3 提供） -->
+    <section class="toolgroup is-todo" data-group="zoom">
+      <button class="tbtn" disabled title="M3 计划 · 缩放面板尚未实现">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 4a6 6 0 1 1 0 12 6 6 0 0 1 0-12Zm0 2a4 4 0 1 0 0 8 4 4 0 0 0 0-8ZM7 9h6v2H7V9Zm10.5 8.5 3 3 1.4-1.4-3-3-1.4 1.4ZM3 3h4v2H5v2H3V3Zm14 0h4v4h-2V5h-2V3ZM3 15h2v4h4v2H3v-6Z"/></svg>
+        <span>缩放</span>
+      </button>
+    </section>
+
+    <!-- 工具栏 4：颜色（占位，未实现） -->
+    <section class="toolgroup is-todo" data-group="color">
+      <button class="tbtn" disabled title="M4 计划 · 尚未实现">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c4.4 0 8 3.6 8 8 0 3-2 4.7-3.7 4.7-1 0-1.6-.6-1.6-1.4 0-1.2 1-1.3 1-2.6A3.7 3.7 0 0 0 12 8.3c-2 0-3.4 1-4 2.4L6 17.5c-.6 1.4.2 2.5 1.4 2.5-1 1.1-2.6.9-3.3-.3C3 18 3.6 16 4.4 14 5 8 8 4.7 12 3Z"/></svg>
+        <span>调色</span>
+      </button>
+      <button class="tbtn" disabled title="M4 计划 · 尚未实现">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h4v4H4V4Zm6 0h4v4h-4V4Zm6 0h4v4h-4V4ZM4 10h4v4H4v-4Zm10 4a6 6 0 1 1 0 12 6 6 0 0 1 0-12Zm0 2a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z"/></svg>
+        <span>滤镜</span>
+      </button>
+    </section>
+
+    <div class="toolbar-spacer"></div>
+
+    <div class="docname" id="doc-name" title="当前文件">未命名</div>
+  </header>
+
+  <!-- ===== 中部图片呈现区域 ===== -->
+  <main id="workspace">
+    <canvas id="viewport"></canvas>
+    <div class="empty-hint" id="empty-hint">
+      <div class="hint-icon">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Zm0 14 5-6 3 4 4-5 6 7v-1H4v1Zm5-9a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z"/></svg>
+      </div>
+      <p><strong>拖拽图片到此处</strong>，或 <kbd>Ctrl</kbd>+<kbd>O</kbd> 打开</p>
+      <p class="hint-sub">滚轮缩放 · 拖动平移 · <kbd>Ctrl</kbd>+<kbd>0</kbd> 适应窗口 · <kbd>Ctrl</kbd>+<kbd>1</kbd> 100%</p>
+    </div>
+
+    <!-- 预备裁剪模式的参数面板 -->
+    <div class="fpanel" id="crop-panel" hidden>
+      <div class="fpanel-head">
+        <span class="fpanel-title">裁剪工具</span>
+        <span class="fpanel-meta mono" id="crop-meta">—</span>
+        <button class="fpanel-close" id="crop-close" title="取消 (Esc)">✕</button>
+      </div>
+      <div class="fpanel-body">
+        <div class="margin-grid">
+          <label class="m m-top"><span>上</span><input id="crop-top" type="number" min="0" step="1" aria-label="上边距 px"></label>
+          <label class="m m-left"><span>左</span><input id="crop-left" type="number" min="0" step="1" aria-label="左边距 px"></label>
+          <div class="m-center">
+            <label class="m"><span>宽</span><input id="crop-w" type="number" min="1" step="1" aria-label="宽 px"></label>
+            <label class="m"><span>高</span><input id="crop-h" type="number" min="1" step="1" aria-label="高 px"></label>
+          </div>
+          <label class="m m-right"><span>右</span><input id="crop-right" type="number" min="0" step="1" aria-label="右边距 px"></label>
+          <label class="m m-bottom"><span>下</span><input id="crop-bottom" type="number" min="0" step="1" aria-label="下边距 px"></label>
+        </div>
+        <div class="fpanel-foot">
+          <button class="btn primary" id="crop-apply">裁剪</button>
+          <button class="btn ghost" id="crop-cancel">取消</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 旋转 / 镜像面板 -->
+    <div class="fpanel" id="rotate-panel" hidden>
+      <div class="fpanel-head">
+        <span class="fpanel-title">旋转 / 镜像</span>
+        <button class="fpanel-close" id="rotate-close" title="关闭">✕</button>
+      </div>
+      <div class="fpanel-body rotate-grid">
+        <button class="btn" id="rot-ccw">逆时针 90°</button>
+        <button class="btn" id="rot-cw">顺时针 90°</button>
+        <button class="btn" id="mir-h">水平镜像</button>
+        <button class="btn" id="mir-v">垂直镜像</button>
+      </div>
+    </div>
+  </main>
+
+  <!-- ===== 底部状态栏 ===== -->
+  <footer class="statusbar">
+
+    <!-- B1 图片尺寸信息 -->
+    <div class="statuscell" id="cell-size" title="图片尺寸 / 格式 / 体积">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4V5Zm2 2v10h12V7H6Zm2 2h3v2H8V9Z"/></svg>
+      <span class="mono" id="lbl-size">— × — px</span>
+    </div>
+
+    <!-- B2 光标坐标（左上角为原点） -->
+    <div class="statuscell" id="cell-coord" title="光标坐标 · 原点在图片左上角">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3h7v2H5v5H3V3Zm11 0h7v7h-2V5h-5V3ZM5 14h2v5h5v2H5v-7Zm9-3h7v7h-2v-5h-5v-2Zm-2 0h2v2h-2v-2Z"/></svg>
+      <span class="mono" id="lbl-coord">x: —&nbsp;&nbsp;y: —</span>
+    </div>
+
+    <!-- B3 缩放 slider -->
+    <div class="statuscell zoomcell" id="cell-zoom" title="缩放 (1% – 1600%) · 滚轮以指针为锚点">
+      <button class="sbtn" id="zoom-out" title="缩小 (Ctrl+-)">−</button>
+      <input class="zoom-slider" id="zoom-slider" type="range"
+             min="0" max="1000" step="1" value="624" aria-label="缩放">
+      <button class="sbtn" id="zoom-in" title="放大 (Ctrl+=)">+</button>
+      <input class="zoom-value mono" id="zoom-value" type="number"
+             min="1" max="1600" step="1" value="100" aria-label="缩放比例 %">
+      <span class="pct">%</span>
+    </div>
+
+    <div class="statuscell status-right" id="cell-fit">
+      <button class="sbtn" id="btn-fit" title="适应窗口 (Ctrl+0)">适应</button>
+      <button class="sbtn" id="btn-100" title="实际像素 100% (Ctrl+1)">1:1</button>
+    </div>
+  </footer>
+</div>
+
+<input type="file" id="file-input" accept="image/*" hidden>
+<div id="toast"></div>
+
+<!-- ===== 脚本：core → modules → boot ===== -->
+<script src="js/core/util.js"></script>
+<script src="js/core/config.js"></script>
+<script src="js/core/bus.js"></script>
+<script src="js/core/state.js"></script>
+<script src="js/modules/viewport.js"></script>
+<script src="js/modules/statusbar.js"></script>
+<script src="js/modules/toast.js"></script>
+<script src="js/modules/fileio.js"></script>
+<script src="js/modules/crop.js"></script>
+<script src="js/modules/transform.js"></script>
+<script src="js/modules/panels.js"></script>
+<script src="js/modules/toolbar.js"></script>
+<script src="js/modules/input.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+# 操作系统 / 文件系统杂项
+.DS_Store
+Thumbs.db
+desktop.ini
+$RECYCLE.BIN/
+
+# 编辑器
+.vscode/
+.idea/
+*.swp
+
+# 本地日志与临时产物
+*.log
+*.tmp
+*~
